@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"os"
 
 	"github.com/cloudfoundry/cli/cf/terminal"
@@ -70,11 +73,45 @@ func (c *FastPushPlugin) Run(cliConnection plugin.CliConnection, args []string) 
 }
 
 func (c *FastPushPlugin) fastPush(cliConnection plugin.CliConnection, appName string, dryRun bool) {
+	// Please check what GetApp returns here
+	// https://github.com/cloudfoundry/cli/blob/master/plugin/models/get_app.go
+	var appUrls []string
+
 	if dryRun {
 		c.ui.Warn("warning: No changes will be applied, this is a dry run !!")
 	}
 
-	//TODO
+	app := c.GetApp(appName)
+	routes := app.Routes
+
+	if len(routes) > 1 {
+		for _, route := range routes {
+			c.ui.Warn("multiple corresponding url's has been found")
+			panic("NOT IMPLEMENTED YET!")
+		}
+	} else {
+		c.ui.Say("corresponding app host: %s", routes[0].Host)
+		c.ui.Say("corresponding app domain: %s", routes[0].Domain.Name)
+	}
+
+	// dispatch request TODO
+	url := routes[0].Host
+	var query = []byte(`query-here`)
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(query))
+	req.Header.Set("X-Custom-Header", "somevalue")
+	req.Header.Set("Content-Type", "text/plain")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	fmt.Println("response Status:", resp.Status)
+	fmt.Println("response Headers:", resp.Header)
+	body, _ := ioutil.ReadAll(resp.Body)
+	fmt.Println("response Body:", string(body))
 }
 
 /*
