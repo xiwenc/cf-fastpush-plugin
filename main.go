@@ -1,7 +1,9 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"os"
 
 	"github.com/cloudfoundry/cli/cf/terminal"
 	"github.com/cloudfoundry/cli/plugin"
@@ -33,19 +35,42 @@ type FastPushPlugin struct {
 func (c *FastPushPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 	// Ensure that the user called the command fast-push
 	// alias fp is auto mapped
-	if cliConnection.IsLoggedIn() == false {
-		panic("cannot perform fast push without being logged in to CF")
+	if args[0] != "fast-push" || args[0] != "fp" {
+		return
 	}
-	if args[0] == "fast-push" && len(args) == 2 {
+
+	c.ui = terminal.NewUI(os.Stdin, terminal.NewTeePrinter())
+
+	if cliConnection.IsLoggedIn() == false {
+		panic("cannot perform fast-push without being logged in to CF")
+	}
+
+	// set flags for dry and get-files
+
+	flagSet := flag.NewFlagSet("fpfs", flag.ExitOnError)
+	dryRun := flagSet.Bool("dry", true, "dry run flag")
+	getFiles := flagSet.Bool("get-files", true, "get-files gets the target files without any push actions")
+
+	err := flagSet.Parse(args[1:])
+	if err != nil {
+		fmt.Printf("error: %v", err)
+	}
+
+	if len(args) > 2 {
 		fmt.Println("Running the fast-push command")
 		fmt.Printf("Target app: %s /n", args[1])
 		c.fastPush(cliConnection, args[1])
 	} else {
 		c.showUsage(args)
 	}
+
 }
 
 func (c *FastPushPlugin) fastPush(cliConnection plugin.CliConnection, appName string) {
+
+}
+
+func (c *FastPushPlugin) getFiles(cliConnection plugin.CliConnection, appName string) {
 
 }
 
@@ -84,7 +109,11 @@ func (c *FastPushPlugin) GetMetadata() plugin.PluginMetadata {
 				// UsageDetails is optional
 				// It is used to show help of usage of each command
 				UsageDetails: plugin.Usage{
-					Usage: "fast-push appName\n   cf fp appName",
+					Usage: "fast-push appname\n   cf fp appname",
+					Options: map[string]string{
+						"dry":       "--dry, dry run for fast-push",
+						"get-files": "--get-files, get current files from the app",
+					},
 				},
 			},
 		},
@@ -98,17 +127,7 @@ func (c *FastPushPlugin) GetMetadata() plugin.PluginMetadata {
 * plugin.
  */
 func main() {
-	// Any initialization for your plugin can be handled here
-	//
-	// Note: to run the plugin.Start method, we pass in a pointer to the struct
-	// implementing the interface defined at "github.com/cloudfoundry/cli/plugin/plugin.go"
-	//
-	// Note: The plugin's main() method is invoked at install time to collect
-	// metadata. The plugin will exit 0 and the Run([]string) method will not be
-	// invoked.
 	plugin.Start(new(FastPushPlugin))
-	// Plugin code should be written in the Run([]string) method,
-	// ensuring the plugin environment is bootstrapped.
 }
 
 func (c *FastPushPlugin) showUsage(args []string) {
