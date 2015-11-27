@@ -45,33 +45,36 @@ func (c *FastPushPlugin) Run(cliConnection plugin.CliConnection, args []string) 
 		panic("cannot perform fast-push without being logged in to CF")
 	}
 
-	// set flags for dry and get-files
-
+	// set flag for dry run
 	flagSet := flag.NewFlagSet("fpfs", flag.ExitOnError)
-	dryRun := flagSet.Bool("dry", true, "dry run flag")
-	getFiles := flagSet.Bool("get-files", true, "get-files gets the target files without any push actions")
+	dryRun := flagSet.Bool("dry", false, "dry run flag")
 
 	err := flagSet.Parse(args[1:])
 	if err != nil {
-		fmt.Printf("error: %v", err)
+		c.ui.Failed(err.Error())
 	}
 
 	if len(args) > 2 {
 		fmt.Println("Running the fast-push command")
 		fmt.Printf("Target app: %s /n", args[1])
-		c.fastPush(cliConnection, args[1])
+		// check if the user asked for a dry run or not
+		if *c.dryRun {
+			c.fastPush(cliConnection, args[1], true)
+		} else {
+			c.fastPush(cliConnection, args[1], false)
+		}
 	} else {
 		c.showUsage(args)
 	}
 
 }
 
-func (c *FastPushPlugin) fastPush(cliConnection plugin.CliConnection, appName string) {
+func (c *FastPushPlugin) fastPush(cliConnection plugin.CliConnection, appName string, dryRun bool) {
+	if dryRun {
+		c.ui.Warn("warning: No changes will be applied, this is a dry run !!")
+	}
 
-}
-
-func (c *FastPushPlugin) getFiles(cliConnection plugin.CliConnection, appName string) {
-
+	//TODO
 }
 
 /*
@@ -111,8 +114,7 @@ func (c *FastPushPlugin) GetMetadata() plugin.PluginMetadata {
 				UsageDetails: plugin.Usage{
 					Usage: "fast-push appname\n   cf fp appname",
 					Options: map[string]string{
-						"dry":       "--dry, dry run for fast-push",
-						"get-files": "--get-files, get current files from the app",
+						"dry": "--dry, dry run for fast-push",
 					},
 				},
 			},
