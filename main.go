@@ -42,6 +42,10 @@ func (c *FastPushPlugin) Run(cliConnection plugin.CliConnection, args []string) 
 	c.ui = terminal.NewUI(os.Stdin, terminal.NewTeePrinter())
 
 	if args[0] == "fast-push" || args[0] == "fp" {
+		if len(args) == 1 {
+			c.showUsage(args)
+			return
+		}
 		// set flag for dry run
 		fc := flags.New()
 		fc.NewBoolFlag("dry", "d", "bool dry run flag")
@@ -50,10 +54,12 @@ func (c *FastPushPlugin) Run(cliConnection plugin.CliConnection, args []string) 
 		if err != nil {
 			c.ui.Failed(err.Error())
 		}
+		// check if the user asked for a dry run or not
 		if fc.IsSet("dry") {
 			dryRun = fc.Bool("dry")
+		} else {
+			c.ui.Warn("dry run not set, commencing fast push")
 		}
-
 	} else {
 		return
 	}
@@ -67,17 +73,11 @@ func (c *FastPushPlugin) Run(cliConnection plugin.CliConnection, args []string) 
 		panic("cannot perform fast-push without being logged in to CF")
 	}
 
-	if len(args) > 2 {
+	if len(args) >= 2 {
 		fmt.Println("Running the fast-push command")
-		fmt.Printf("Target app: %s /n", args[1])
-		// check if the user asked for a dry run or not
-		if dryRun {
-			c.fastPush(cliConnection, args[1], true)
-		} else {
-			c.fastPush(cliConnection, args[1], false)
-		}
-	} else {
-		c.showUsage(args)
+		fmt.Printf("Target app: %s \n", args[1])
+		c.fastPush(cliConnection, args[1], dryRun)
+
 	}
 
 }
@@ -98,14 +98,21 @@ func (c *FastPushPlugin) fastPush(cliConnection plugin.CliConnection, appName st
 
 	if len(routes) > 1 {
 		for _, route := range routes {
+			// what if there is more than one corresponding route ??
 			c.ui.Warn("multiple corresponding url's has been found")
-			c.ui.Say(route.Host)
-			c.ui.Say(route.Domain.Name)
+			c.ui.Say("corresponding app host: %s", route.Host)
+			c.ui.Say("corresponding app Guid: %s", route.Guid)
+			c.ui.Say("corresponding app Domain.Name: %s", route.Domain.Name)
+			c.ui.Say("corresponding app Domain.Guid: %s", route.Domain.Guid)
+			panic("NOT IMPLEMENTED YET!")
 		}
 	} else {
 		c.ui.Say("corresponding app host: %s", routes[0].Host)
-		c.ui.Say("corresponding app domain: %s", routes[0].Domain.Name)
+		c.ui.Say("corresponding app Guid: %s", routes[0].Guid)
+		c.ui.Say("corresponding app Domain.Name: %s", routes[0].Domain.Name)
+		c.ui.Say("corresponding app Domain.Guid: %s", routes[0].Domain.Guid)
 	}
+
 	panic("NOT IMPLEMENTED YET!")
 	// dispatch request TODO
 	url := routes[0].Host
@@ -162,7 +169,7 @@ func (c *FastPushPlugin) GetMetadata() plugin.PluginMetadata {
 				// UsageDetails is optional
 				// It is used to show help of usage of each command
 				UsageDetails: plugin.Usage{
-					Usage: "fast-push appname\n   cf fp appname",
+					Usage: "cf fast-push appname\n   cf fp appname",
 					Options: map[string]string{
 						"dry": "--dry, dry run for fast-push",
 					},
