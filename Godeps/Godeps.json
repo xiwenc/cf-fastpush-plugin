@@ -1,0 +1,42 @@
+{
+	"ImportPath": "github.com/emirozer/cf-fastpush-plugin",
+	"GoVersion": "go1.5.1",
+	"Deps": [
+		{
+			"ImportPath": "github.com/blang/semver",
+			"Comment": "v3.0.1",
+			"Rev": "31b736133b98f26d5e078ec9eb591666edfd091f"
+		},
+		{
+			"ImportPath": "github.com/cloudfoundry/cli/cf",
+			"Comment": "v6.14.0-63-g3870952",
+			"Rev": "3870952a09b78fea13437e42574d3c209c59d55e"
+		},
+		{
+			"ImportPath": "github.com/cloudfoundry/cli/plugin",
+			"Comment": "v6.14.0-63-g3870952",
+			"Rev": "3870952a09b78fea13437e42574d3c209c59d55e"
+		},
+		{
+			"ImportPath": "github.com/cloudfoundry/gofileutils/fileutils",
+			"Rev": "c53c86fd9621d83f5d6d33a8e41499c4c9df95ce"
+		},
+		{
+			"ImportPath": "github.com/nicksnyder/go-i18n/i18n",
+			"Comment": "v1.3.0-5-g37e5c2d",
+			"Rev": "37e5c2de3e03e4b82693e3fcb4a6aa2cc4eb07e3"
+		},
+		{
+			"ImportPath": "github.com/simonleung8/flags",
+			"Rev": "4304da028804a934cf49cd9a574692d80abd13c7"
+		},
+		{
+			"ImportPath": "golang.org/x/crypto/ssh/terminal",
+			"Rev": "beef0f4390813b96e8e68fd78570396d0f4751fc"
+		},
+		{
+			"ImportPath": "gopkg.in/yaml.v2",
+			"Rev": "53feefa2559fb8dfa8d81baad31be332c97d6c77"
+		}
+	]
+}
