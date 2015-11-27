@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"flag"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -10,6 +9,7 @@ import (
 
 	"github.com/cloudfoundry/cli/cf/terminal"
 	"github.com/cloudfoundry/cli/plugin"
+	"github.com/simonleung8/flags"
 )
 
 /*
@@ -38,30 +38,40 @@ type FastPushPlugin struct {
 func (c *FastPushPlugin) Run(cliConnection plugin.CliConnection, args []string) {
 	// Ensure that the user called the command fast-push
 	// alias fp is auto mapped
-	if args[0] != "fast-push" || args[0] != "fp" {
+	var dryRun bool
+	c.ui = terminal.NewUI(os.Stdin, terminal.NewTeePrinter())
+
+	if args[0] == "fast-push" || args[0] == "fp" {
+		// set flag for dry run
+		fc := flags.New()
+		fc.NewBoolFlag("dry", "d", "bool dry run flag")
+
+		err := fc.Parse(args[1:]...)
+		if err != nil {
+			c.ui.Failed(err.Error())
+		}
+		if fc.IsSet("dry") {
+			dryRun = fc.Bool("dry")
+		}
+
+	} else {
 		return
 	}
 
-	c.ui = terminal.NewUI(os.Stdin, terminal.NewTeePrinter())
-
-	if cliConnection.IsLoggedIn() == false {
-		panic("cannot perform fast-push without being logged in to CF")
-	}
-
-	// set flag for dry run
-	flagSet := flag.NewFlagSet("fpfs", flag.ExitOnError)
-	dryRun := flagSet.Bool("dry", false, "dry run flag")
-
-	err := flagSet.Parse(args[1:])
+	cliLogged, err := cliConnection.IsLoggedIn()
 	if err != nil {
 		c.ui.Failed(err.Error())
+	}
+
+	if cliLogged == false {
+		panic("cannot perform fast-push without being logged in to CF")
 	}
 
 	if len(args) > 2 {
 		fmt.Println("Running the fast-push command")
 		fmt.Printf("Target app: %s /n", args[1])
 		// check if the user asked for a dry run or not
-		if *c.dryRun {
+		if dryRun {
 			c.fastPush(cliConnection, args[1], true)
 		} else {
 			c.fastPush(cliConnection, args[1], false)
@@ -75,25 +85,28 @@ func (c *FastPushPlugin) Run(cliConnection plugin.CliConnection, args []string) 
 func (c *FastPushPlugin) fastPush(cliConnection plugin.CliConnection, appName string, dryRun bool) {
 	// Please check what GetApp returns here
 	// https://github.com/cloudfoundry/cli/blob/master/plugin/models/get_app.go
-	var appUrls []string
 
 	if dryRun {
 		c.ui.Warn("warning: No changes will be applied, this is a dry run !!")
 	}
 
-	app := c.GetApp(appName)
+	app, err := cliConnection.GetApp(appName)
+	if err != nil {
+		c.ui.Failed(err.Error())
+	}
 	routes := app.Routes
 
 	if len(routes) > 1 {
 		for _, route := range routes {
 			c.ui.Warn("multiple corresponding url's has been found")
-			panic("NOT IMPLEMENTED YET!")
+			c.ui.Say(route.Host)
+			c.ui.Say(route.Domain.Name)
 		}
 	} else {
 		c.ui.Say("corresponding app host: %s", routes[0].Host)
 		c.ui.Say("corresponding app domain: %s", routes[0].Domain.Name)
 	}
-
+	panic("NOT IMPLEMENTED YET!")
 	// dispatch request TODO
 	url := routes[0].Host
 	var query = []byte(`query-here`)
