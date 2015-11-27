@@ -87,6 +87,7 @@ func (c *FastPushPlugin) fastPush(cliConnection plugin.CliConnection, appName st
 	// https://github.com/cloudfoundry/cli/blob/master/plugin/models/get_app.go
 
 	if dryRun {
+		// NEED TO HANDLE DRY RUN
 		c.ui.Warn("warning: No changes will be applied, this is a dry run !!")
 	}
 
@@ -94,6 +95,7 @@ func (c *FastPushPlugin) fastPush(cliConnection plugin.CliConnection, appName st
 	if err != nil {
 		c.ui.Failed(err.Error())
 	}
+
 	routes := app.Routes
 
 	if len(routes) > 1 {
@@ -109,6 +111,7 @@ func (c *FastPushPlugin) fastPush(cliConnection plugin.CliConnection, appName st
 	} else {
 		c.ui.Say("corresponding app host: %s", routes[0].Host)
 		c.ui.Say("corresponding app Guid: %s", routes[0].Guid)
+		c.ui.Say("corresponding app Domain: %s", routes[0].Domain)
 		c.ui.Say("corresponding app Domain.Name: %s", routes[0].Domain.Name)
 		c.ui.Say("corresponding app Domain.Guid: %s", routes[0].Domain.Guid)
 	}
@@ -169,7 +172,7 @@ func (c *FastPushPlugin) GetMetadata() plugin.PluginMetadata {
 				// UsageDetails is optional
 				// It is used to show help of usage of each command
 				UsageDetails: plugin.Usage{
-					Usage: "cf fast-push appname\n   cf fp appname",
+					Usage: "cf fast-push APP_NAME\n   cf fp APP_NAME",
 					Options: map[string]string{
 						"dry": "--dry, dry run for fast-push",
 					},
