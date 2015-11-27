@@ -58,7 +58,7 @@ func (c *FastPushPlugin) Run(cliConnection plugin.CliConnection, args []string) 
 		if fc.IsSet("dry") {
 			dryRun = fc.Bool("dry")
 		} else {
-			c.ui.Warn("dry run not set, commencing fast push")
+			c.ui.Warn("warning: dry run not set, commencing fast push")
 		}
 	} else {
 		return
@@ -74,8 +74,8 @@ func (c *FastPushPlugin) Run(cliConnection plugin.CliConnection, args []string) 
 	}
 
 	if len(args) >= 2 {
-		fmt.Println("Running the fast-push command")
-		fmt.Printf("Target app: %s \n", args[1])
+		c.ui.Say("Running the fast-push command")
+		c.ui.Say("Target app: %s \n", args[1])
 		c.fastPush(cliConnection, args[1], dryRun)
 
 	}
@@ -106,7 +106,6 @@ func (c *FastPushPlugin) fastPush(cliConnection plugin.CliConnection, appName st
 			c.ui.Say("corresponding app Guid: %s", route.Guid)
 			c.ui.Say("corresponding app Domain.Name: %s", route.Domain.Name)
 			c.ui.Say("corresponding app Domain.Guid: %s", route.Domain.Guid)
-			panic("NOT IMPLEMENTED YET!")
 		}
 	} else {
 		c.ui.Say("corresponding app host: %s", routes[0].Host)
@@ -131,8 +130,8 @@ func (c *FastPushPlugin) fastPush(cliConnection plugin.CliConnection, appName st
 	}
 	defer resp.Body.Close()
 
-	fmt.Println("response Status:", resp.Status)
-	fmt.Println("response Headers:", resp.Header)
+	c.ui.Say("response Status:", resp.Status)
+	c.ui.Say("response Headers:", resp.Header)
 	body, _ := ioutil.ReadAll(resp.Body)
 	fmt.Println("response Body:", string(body))
 }
