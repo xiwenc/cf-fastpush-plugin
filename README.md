@@ -1,0 +1,1 @@
+fast-push: CLI Plugin
