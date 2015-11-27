@@ -97,7 +97,7 @@ func (c *FastPushPlugin) fastPush(cliConnection plugin.CliConnection, appName st
 	// dispatch request TODO
 	url := routes[0].Host
 	var query = []byte(`query-here`)
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(query))
+	req, err := http.NewRequest("POST", url+"/fast-push", bytes.NewBuffer(query))
 	req.Header.Set("X-Custom-Header", "somevalue")
 	req.Header.Set("Content-Type", "text/plain")
 
