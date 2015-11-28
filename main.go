@@ -1,15 +1,17 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"os"
+	"regexp"
 
+	"github.com/parnurzeal/gorequest"
+	"github.com/xiwenc/cf-fastpush-controller/lib"
 	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/cf/terminal"
 	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/plugin"
 	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/simonleung8/flags"
+	"strings"
+	"encoding/json"
 )
 
 /*
@@ -41,6 +43,16 @@ func (c *FastPushPlugin) Run(cliConnection plugin.CliConnection, args []string) 
 	var dryRun bool
 	c.ui = terminal.NewUI(os.Stdin, terminal.NewTeePrinter())
 
+	cliLogged, err := cliConnection.IsLoggedIn()
+	if err != nil {
+		c.ui.Failed(err.Error())
+	}
+
+	if cliLogged == false {
+		panic("cannot perform fast-push without being logged in to CF")
+	}
+
+
 	if args[0] == "fast-push" || args[0] == "fp" {
 		if len(args) == 1 {
 			c.showUsage(args)
@@ -60,29 +72,31 @@ func (c *FastPushPlugin) Run(cliConnection plugin.CliConnection, args []string) 
 		} else {
 			c.ui.Warn("warning: dry run not set, commencing fast push")
 		}
+
+		c.ui.Say("Running the fast-push command")
+		c.ui.Say("Target app: %s \n", args[1])
+		c.FastPush(cliConnection, args[1], dryRun)
+	} else if args[0] == "fast-push-status" || args[0] == "fps" {
+		c.FastPushStatus(cliConnection, args[1])
 	} else {
 		return
 	}
 
-	cliLogged, err := cliConnection.IsLoggedIn()
-	if err != nil {
-		c.ui.Failed(err.Error())
-	}
-
-	if cliLogged == false {
-		panic("cannot perform fast-push without being logged in to CF")
-	}
-
-	if len(args) >= 2 {
-		c.ui.Say("Running the fast-push command")
-		c.ui.Say("Target app: %s \n", args[1])
-		c.fastPush(cliConnection, args[1], dryRun)
-
-	}
-
 }
 
-func (c *FastPushPlugin) fastPush(cliConnection plugin.CliConnection, appName string, dryRun bool) {
+func (c *FastPushPlugin) FastPushStatus(cliConnection plugin.CliConnection, appName string) {
+	apiEndpoint := c.GetApiEndpoint(cliConnection, appName)
+	status := lib.Status{}
+	request := gorequest.New()
+	_, body, err := request.Get(apiEndpoint + "/status").End()
+	if err != nil {
+		panic(err)
+	}
+	json.Unmarshal([]byte(body), &status)
+	c.ui.Say(status.Health)
+}
+
+func (c *FastPushPlugin) FastPush(cliConnection plugin.CliConnection, appName string, dryRun bool) {
 	// Please check what GetApp returns here
 	// https://github.com/cloudfoundry/cli/blob/master/plugin/models/get_app.go
 
@@ -91,49 +105,14 @@ func (c *FastPushPlugin) fastPush(cliConnection plugin.CliConnection, appName st
 		c.ui.Warn("warning: No changes will be applied, this is a dry run !!")
 	}
 
-	app, err := cliConnection.GetApp(appName)
-	if err != nil {
-		c.ui.Failed(err.Error())
-	}
-
-	routes := app.Routes
-
-	if len(routes) > 1 {
-		for _, route := range routes {
-			// what if there is more than one corresponding route ??
-			c.ui.Warn("multiple corresponding url's has been found")
-			c.ui.Say("corresponding app host: %s", route.Host)
-			c.ui.Say("corresponding app Guid: %s", route.Guid)
-			c.ui.Say("corresponding app Domain.Name: %s", route.Domain.Name)
-			c.ui.Say("corresponding app Domain.Guid: %s", route.Domain.Guid)
-		}
-	} else {
-		c.ui.Say("corresponding app host: %s", routes[0].Host)
-		c.ui.Say("corresponding app Guid: %s", routes[0].Guid)
-		c.ui.Say("corresponding app Domain: %s", routes[0].Domain)
-		c.ui.Say("corresponding app Domain.Name: %s", routes[0].Domain.Name)
-		c.ui.Say("corresponding app Domain.Guid: %s", routes[0].Domain.Guid)
-	}
-
-	panic("NOT IMPLEMENTED YET!")
-	// dispatch request TODO
-	url := routes[0].Host
-	var query = []byte(`query-here`)
-	req, err := http.NewRequest("POST", url+"/_berlin/files", bytes.NewBuffer(query))
-	req.Header.Set("X-Custom-Header", "somevalue")
-	req.Header.Set("Content-Type", "text/plain")
-
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	apiEndpoint := c.GetApiEndpoint(cliConnection, appName)
+	request := gorequest.New()
+	response, body, err := request.Get(apiEndpoint + "/files").End()
 	if err != nil {
 		panic(err)
 	}
-	defer resp.Body.Close()
-
-	c.ui.Say("response Status:", resp.Status)
-	c.ui.Say("response Headers:", resp.Header)
-	body, _ := ioutil.ReadAll(resp.Body)
-	fmt.Println("response Body:", string(body))
+	c.ui.Say(response.Status)
+	c.ui.Say(body)
 }
 
 /*
@@ -177,6 +156,11 @@ func (c *FastPushPlugin) GetMetadata() plugin.PluginMetadata {
 					},
 				},
 			},
+			plugin.Command{
+				Name:     "fast-push-status",
+				Alias:    "fps",
+				HelpText: "fast-push-status shows the current state of your application",
+			},
 		},
 	}
 }
@@ -197,4 +181,23 @@ func (c *FastPushPlugin) showUsage(args []string) {
 			fmt.Println("Invalid Usage: \n", cmd.UsageDetails.Usage)
 		}
 	}
+}
+
+func (c *FastPushPlugin) GetApiEndpoint(cliConnection plugin.CliConnection, appName string) string {
+	results, err := cliConnection.CliCommandWithoutTerminalOutput("app", appName)
+	if err != nil {
+		c.ui.Failed(err.Error())
+	}
+
+
+	for _, line := range results {
+		match, _ :=regexp.MatchString("^urls:.*", line)
+		if match {
+			parts := strings.Fields(line)
+			if len(parts) > 1 {
+				return "https://" + parts[1] + "/_fastpush"
+			}
+		}
+	}
+	panic("Could not find usable route for this app. Make sure at least one route is mapped to this app")
 }
