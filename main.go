@@ -12,6 +12,7 @@ import (
 	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/simonleung8/flags"
 	"strings"
 	"encoding/json"
+	"io/ioutil"
 )
 
 /*
@@ -107,12 +108,24 @@ func (c *FastPushPlugin) FastPush(cliConnection plugin.CliConnection, appName st
 
 	apiEndpoint := c.GetApiEndpoint(cliConnection, appName)
 	request := gorequest.New()
-	response, body, err := request.Get(apiEndpoint + "/files").End()
+	_, body, err := request.Get(apiEndpoint + "/files").End()
 	if err != nil {
 		panic(err)
 	}
-	c.ui.Say(response.Status)
-	c.ui.Say(body)
+	remoteFiles := map[string]*lib.FileEntry{}
+	json.Unmarshal([]byte(body), &remoteFiles)
+
+	localFiles := lib.ListFiles()
+
+	filesToUpload := c.ComputeFilesToUpload(localFiles, remoteFiles)
+	payload, _ := json.Marshal(filesToUpload)
+	_, body, err = request.Put(apiEndpoint + "/files").Send(string(payload)).End()
+	if err != nil {
+		panic(err)
+	}
+	status := lib.Status{}
+	json.Unmarshal([]byte(body), &status)
+	c.ui.Say(status.Health)
 }
 
 /*
@@ -200,4 +213,20 @@ func (c *FastPushPlugin) GetApiEndpoint(cliConnection plugin.CliConnection, appN
 		}
 	}
 	panic("Could not find usable route for this app. Make sure at least one route is mapped to this app")
+}
+
+func (c *FastPushPlugin) ComputeFilesToUpload(local map[string]*lib.FileEntry, remote map[string]*lib.FileEntry) map[string]*lib.FileEntry {
+	filesToUpload := map[string]*lib.FileEntry{}
+	for path, f := range local {
+		if remote[path] == nil {
+			c.ui.Say("[NEW] " + path)
+			f.Content, _ = ioutil.ReadFile(path)
+			filesToUpload[path] = f
+		} else if remote[path].Checksum != f.Checksum {
+			c.ui.Say("[MOD] " + path)
+			f.Content, _ = ioutil.ReadFile(path)
+			filesToUpload[path] = f
+		}
+	}
+	return filesToUpload
 }
