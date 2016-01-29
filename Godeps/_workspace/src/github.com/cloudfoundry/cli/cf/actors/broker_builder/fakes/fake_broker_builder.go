@@ -2,11 +2,11 @@
 package fakes
 
 import (
-	. "github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/cf/actors/broker_builder"
+	. "github.com/cloudfoundry/cli/cf/actors/broker_builder"
 
 	"sync"
 
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/cf/models"
+	"github.com/cloudfoundry/cli/cf/models"
 )
 
 type FakeBrokerBuilder struct {

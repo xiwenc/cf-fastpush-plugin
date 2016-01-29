@@ -56,9 +56,9 @@
 package i18n
 
 import (
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/nicksnyder/go-i18n/i18n/bundle"
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/nicksnyder/go-i18n/i18n/language"
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/nicksnyder/go-i18n/i18n/translation"
+	"github.com/nicksnyder/go-i18n/i18n/bundle"
+	"github.com/nicksnyder/go-i18n/i18n/language"
+	"github.com/nicksnyder/go-i18n/i18n/translation"
 )
 
 // TranslateFunc returns the translation of the string identified by translationID.

@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/blang/semver"
+	"github.com/blang/semver"
 )
 
 func main() {

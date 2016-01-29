@@ -3,9 +3,9 @@ package rpc
 import (
 	"errors"
 
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/cf/command_registry"
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/cf/requirements"
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/simonleung8/flags"
+	"github.com/cloudfoundry/cli/cf/command_registry"
+	"github.com/cloudfoundry/cli/cf/requirements"
+	"github.com/simonleung8/flags"
 )
 
 type NonCodegangstaRunner interface {

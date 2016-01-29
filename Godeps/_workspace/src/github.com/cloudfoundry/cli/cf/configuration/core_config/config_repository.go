@@ -4,9 +4,9 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/blang/semver"
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/cf/configuration"
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/cf/models"
+	"github.com/blang/semver"
+	"github.com/cloudfoundry/cli/cf/configuration"
+	"github.com/cloudfoundry/cli/cf/models"
 )
 
 type ConfigRepository struct {

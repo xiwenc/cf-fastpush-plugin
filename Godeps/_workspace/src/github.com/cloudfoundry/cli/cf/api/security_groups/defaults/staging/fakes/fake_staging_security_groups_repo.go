@@ -4,9 +4,9 @@ package fakes
 import (
 	"sync"
 
-	. "github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/cf/api/security_groups/defaults"
-	. "github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/cf/api/security_groups/defaults/staging"
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/cf/models"
+	. "github.com/cloudfoundry/cli/cf/api/security_groups/defaults"
+	. "github.com/cloudfoundry/cli/cf/api/security_groups/defaults/staging"
+	"github.com/cloudfoundry/cli/cf/models"
 )
 
 type FakeStagingSecurityGroupsRepo struct {

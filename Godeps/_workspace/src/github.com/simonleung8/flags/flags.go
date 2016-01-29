@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/simonleung8/flags/flag"
+	"github.com/simonleung8/flags/flag"
 )
 
 type FlagSet interface {

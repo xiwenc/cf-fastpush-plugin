@@ -16,11 +16,11 @@ import (
 	"golang.org/x/crypto/ssh"
 
 	"github.com/cloudfoundry-incubator/diego-ssh/helpers"
+	"github.com/cloudfoundry/cli/cf/models"
+	"github.com/cloudfoundry/cli/cf/ssh/options"
+	"github.com/cloudfoundry/cli/cf/ssh/sigwinch"
+	"github.com/cloudfoundry/cli/cf/ssh/terminal"
 	"github.com/docker/docker/pkg/term"
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/cf/models"
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/cf/ssh/options"
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/cf/ssh/sigwinch"
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/cf/ssh/terminal"
 )
 
 //go:generate counterfeiter -o fakes/fake_secure_shell.go . SecureShell

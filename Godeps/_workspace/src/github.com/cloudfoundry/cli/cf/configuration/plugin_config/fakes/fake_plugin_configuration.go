@@ -4,7 +4,7 @@ package fakes
 import (
 	"sync"
 
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/cf/configuration/plugin_config"
+	"github.com/cloudfoundry/cli/cf/configuration/plugin_config"
 )
 
 type FakePluginConfiguration struct {

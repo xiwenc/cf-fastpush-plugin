@@ -2,7 +2,7 @@
 package tmp
 
 import (
-	. "github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/cf/api/security_groups/spaces"
+	. "github.com/cloudfoundry/cli/cf/api/security_groups/spaces"
 	"sync"
 )
 

@@ -3,7 +3,7 @@ package plugin_config
 import (
 	"encoding/json"
 
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/plugin"
+	"github.com/cloudfoundry/cli/plugin"
 )
 
 type PluginData struct {

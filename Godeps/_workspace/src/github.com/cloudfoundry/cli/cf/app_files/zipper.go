@@ -8,8 +8,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/cf/errors"
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/gofileutils/fileutils"
+	"github.com/cloudfoundry/cli/cf/errors"
+	"github.com/cloudfoundry/gofileutils/fileutils"
 )
 
 type Zipper interface {

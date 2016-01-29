@@ -1,6 +1,6 @@
 package help
 
-import . "github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/cf/i18n"
+import . "github.com/cloudfoundry/cli/cf/i18n"
 
 func GetHelpTemplate() string {
 	return `{{.Title "` + T("NAME:") + `"}}

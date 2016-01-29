@@ -1,7 +1,7 @@
 package translation
 
 import (
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/nicksnyder/go-i18n/i18n/language"
+	"github.com/nicksnyder/go-i18n/i18n/language"
 )
 
 type singleTranslation struct {

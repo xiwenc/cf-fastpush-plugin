@@ -4,7 +4,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/cf/terminal"
+	"github.com/cloudfoundry/cli/cf/terminal"
 )
 
 type WarningsCollector struct {

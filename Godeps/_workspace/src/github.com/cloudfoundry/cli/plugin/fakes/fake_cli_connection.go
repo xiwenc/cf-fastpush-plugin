@@ -4,8 +4,8 @@ package fakes
 import (
 	"sync"
 
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/plugin"
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/plugin/models"
+	"github.com/cloudfoundry/cli/plugin"
+	"github.com/cloudfoundry/cli/plugin/models"
 )
 
 type FakeCliConnection struct {
