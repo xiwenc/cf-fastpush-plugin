@@ -1,7 +1,7 @@
 package errors
 
 import (
-	. "github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/cf/i18n"
+	. "github.com/cloudfoundry/cli/cf/i18n"
 )
 
 type InvalidTokenError struct {

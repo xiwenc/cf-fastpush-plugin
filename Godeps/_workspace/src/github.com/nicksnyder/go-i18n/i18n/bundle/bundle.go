@@ -4,14 +4,14 @@ package bundle
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"reflect"
 
 	"path/filepath"
 
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/nicksnyder/go-i18n/i18n/language"
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/nicksnyder/go-i18n/i18n/translation"
+	"github.com/nicksnyder/go-i18n/i18n/language"
+	"github.com/nicksnyder/go-i18n/i18n/translation"
 )
 
 // TranslateFunc is a copy of i18n.TranslateFunc to avoid a circular dependency.

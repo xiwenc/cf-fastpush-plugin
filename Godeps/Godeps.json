@@ -1,7 +1,12 @@
 {
-	"ImportPath": "github.com/emirozer/cf-fastpush-plugin",
-	"GoVersion": "go1.5.1",
+	"ImportPath": "github.com/rcefala/cf-fastpush-plugin",
+	"GoVersion": "go1.5",
 	"Deps": [
+		{
+			"ImportPath": "github.com/BurntSushi/toml",
+			"Comment": "v0.1.0-23-g5c4df71",
+			"Rev": "5c4df71dfe9ac89ef6287afc05e4c1b16ae65a1e"
+		},
 		{
 			"ImportPath": "github.com/blang/semver",
 			"Comment": "v3.0.1",
@@ -22,17 +27,85 @@
 			"Rev": "c53c86fd9621d83f5d6d33a8e41499c4c9df95ce"
 		},
 		{
+			"ImportPath": "github.com/hashicorp/hcl",
+			"Rev": "578dd9746824a54637686b51a41bad457a56bcef"
+		},
+		{
+			"ImportPath": "github.com/kr/pretty",
+			"Comment": "go.weekly.2011-12-22-27-ge6ac2fc",
+			"Rev": "e6ac2fc51e89a3249e82157fa0bb7a18ef9dd5bb"
+		},
+		{
+			"ImportPath": "github.com/kr/text",
+			"Rev": "bb797dc4fb8320488f47bf11de07a733d7233e1f"
+		},
+		{
+			"ImportPath": "github.com/magiconair/properties",
+			"Comment": "v1.6.0-1-gc81f9d7",
+			"Rev": "c81f9d71af8f8cba1466501d30326b99a4e56c19"
+		},
+		{
+			"ImportPath": "github.com/matryer/runner",
+			"Rev": "58ee37c57e17662de14205b24a83c88156fa546d"
+		},
+		{
+			"ImportPath": "github.com/mitchellh/mapstructure",
+			"Rev": "281073eb9eb092240d33ef253c404f1cca550309"
+		},
+		{
+			"ImportPath": "github.com/moul/http2curl",
+			"Rev": "b0342e01ef01008cc313e64847a3b80b96e1f9bf"
+		},
+		{
 			"ImportPath": "github.com/nicksnyder/go-i18n/i18n",
 			"Comment": "v1.3.0-5-g37e5c2d",
 			"Rev": "37e5c2de3e03e4b82693e3fcb4a6aa2cc4eb07e3"
+		},
+		{
+			"ImportPath": "github.com/parnurzeal/gorequest",
+			"Comment": "v0.2.13-9-gc73179d",
+			"Rev": "c73179dd31355d86bd7692de9b47623d6d0fa696"
 		},
 		{
 			"ImportPath": "github.com/simonleung8/flags",
 			"Rev": "4304da028804a934cf49cd9a574692d80abd13c7"
 		},
 		{
+			"ImportPath": "github.com/spf13/cast",
+			"Rev": "ee7b3e0353166ab1f3a605294ac8cd2b77953778"
+		},
+		{
+			"ImportPath": "github.com/spf13/jwalterweatherman",
+			"Rev": "d00654080cddbd2b082acaa74007cb94a2b40866"
+		},
+		{
+			"ImportPath": "github.com/spf13/pflag",
+			"Rev": "7f60f83a2c81bc3c3c0d5297f61ddfa68da9d3b7"
+		},
+		{
+			"ImportPath": "github.com/spf13/viper",
+			"Rev": "a212099cbe6fbe8d07476bfda8d2d39b6ff8f325"
+		},
+		{
+			"ImportPath": "github.com/xiwenc/cf-fastpush-controller/lib",
+			"Rev": "99274dd04dd28956db2b918a7b13c40718f49780"
+		},
+		{
+			"ImportPath": "github.com/xiwenc/cf-fastpush-controller/utils",
+			"Rev": "99274dd04dd28956db2b918a7b13c40718f49780"
+		},
+		{
 			"ImportPath": "golang.org/x/crypto/ssh/terminal",
 			"Rev": "beef0f4390813b96e8e68fd78570396d0f4751fc"
+		},
+		{
+			"ImportPath": "golang.org/x/net/publicsuffix",
+			"Rev": "04b9de9b512f58addf28c9853d50ebef61c3953e"
+		},
+		{
+			"ImportPath": "gopkg.in/fsnotify.v1",
+			"Comment": "v1.2.9",
+			"Rev": "8611c35ab31c1c28aa903d33cf8b6e44a399b09e"
 		},
 		{
 			"ImportPath": "gopkg.in/yaml.v2",

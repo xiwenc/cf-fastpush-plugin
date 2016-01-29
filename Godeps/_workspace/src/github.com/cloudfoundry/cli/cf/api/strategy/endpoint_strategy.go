@@ -1,6 +1,6 @@
 package strategy
 
-import "github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/blang/semver"
+import "github.com/blang/semver"
 
 type EndpointStrategy struct {
 	EventsEndpointStrategy

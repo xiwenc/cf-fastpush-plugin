@@ -1,6 +1,6 @@
 package resources
 
-import "github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/cf/models"
+import "github.com/cloudfoundry/cli/cf/models"
 
 type PaginatedServiceInstanceResources struct {
 	TotalResults int `json:"total_results"`

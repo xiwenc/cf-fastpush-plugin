@@ -4,8 +4,8 @@ package fakes
 import (
 	"sync"
 
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/cf/ssh"
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/cf/ssh/options"
+	"github.com/cloudfoundry/cli/cf/ssh"
+	"github.com/cloudfoundry/cli/cf/ssh/options"
 )
 
 type FakeSecureShell struct {

@@ -5,7 +5,7 @@ import (
 	"net"
 	"sync"
 
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/cf/ssh"
+	"github.com/cloudfoundry/cli/cf/ssh"
 )
 
 type FakeListenerFactory struct {

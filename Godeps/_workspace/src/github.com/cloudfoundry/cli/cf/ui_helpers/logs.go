@@ -7,9 +7,9 @@ import (
 	"time"
 	"unicode/utf8"
 
+	"github.com/cloudfoundry/cli/cf/terminal"
 	"github.com/cloudfoundry/loggregatorlib/logmessage"
 	"github.com/cloudfoundry/sonde-go/events"
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/cf/terminal"
 )
 
 func max(a, b int) int {

@@ -1,8 +1,8 @@
 package command_registry
 
 import (
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/cf/requirements"
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/simonleung8/flags"
+	"github.com/cloudfoundry/cli/cf/requirements"
+	"github.com/simonleung8/flags"
 )
 
 //go:generate counterfeiter -o ../../testhelpers/commands/fake_registry_command.go . Command

@@ -4,7 +4,7 @@ package translation
 import (
 	"fmt"
 
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/nicksnyder/go-i18n/i18n/language"
+	"github.com/nicksnyder/go-i18n/i18n/language"
 )
 
 // Translation is the interface that represents a translated string.

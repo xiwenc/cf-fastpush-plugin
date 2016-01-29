@@ -1,7 +1,7 @@
 package fakes
 
 import (
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/cf/models"
+	"github.com/cloudfoundry/cli/cf/models"
 )
 
 type FakeServiceKeyRepo struct {

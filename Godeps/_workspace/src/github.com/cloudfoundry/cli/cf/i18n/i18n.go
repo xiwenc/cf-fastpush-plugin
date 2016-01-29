@@ -6,10 +6,10 @@ import (
 	"path"
 	"strings"
 
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/cf/configuration/core_config"
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/cf/resources"
-	go_i18n "github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/nicksnyder/go-i18n/i18n"
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/nicksnyder/go-i18n/i18n/language"
+	"github.com/cloudfoundry/cli/cf/configuration/core_config"
+	"github.com/cloudfoundry/cli/cf/resources"
+	go_i18n "github.com/nicksnyder/go-i18n/i18n"
+	"github.com/nicksnyder/go-i18n/i18n/language"
 )
 
 const (

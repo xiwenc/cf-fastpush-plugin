@@ -7,9 +7,9 @@ import (
 
 	"github.com/parnurzeal/gorequest"
 	"github.com/xiwenc/cf-fastpush-controller/lib"
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/cf/terminal"
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/plugin"
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/simonleung8/flags"
+	"github.com/cloudfoundry/cli/cf/terminal"
+	"github.com/cloudfoundry/cli/plugin"
+	"github.com/simonleung8/flags"
 	"strings"
 	"encoding/json"
 	"io/ioutil"

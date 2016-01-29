@@ -4,8 +4,8 @@ package fakes
 import (
 	"sync"
 
+	"github.com/cloudfoundry/cli/cf/api"
 	"github.com/cloudfoundry/sonde-go/events"
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/cf/api"
 )
 
 type FakeNoaaConsumer struct {

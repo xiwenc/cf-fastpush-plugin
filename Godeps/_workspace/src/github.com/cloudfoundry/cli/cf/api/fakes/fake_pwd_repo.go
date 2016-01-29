@@ -1,6 +1,6 @@
 package fakes
 
-import "github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/cf/errors"
+import "github.com/cloudfoundry/cli/cf/errors"
 
 type FakePasswordRepo struct {
 	Score          string

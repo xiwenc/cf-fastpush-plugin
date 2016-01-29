@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/emirozer/cf-fastpush-plugin/Godeps/_workspace/src/github.com/cloudfoundry/cli/cf/net"
+	"github.com/cloudfoundry/cli/cf/net"
 )
 
 type FakeHttpClientInterface struct {
