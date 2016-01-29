@@ -52,8 +52,8 @@ How it works
 
 The fastpush mechanism uses the server-client model. The server is `cf-fastpush-controller` and the client is a cf cli plugin `cf-fastpush-plugin`.
 
-`cf-fastpush-controller` -- A daemon that sits between your application and the gorouters. This service is always available and it responds to some specific paths under `/_fastpush/*`. Paths that are not known to the controller are reverse-proxied to the backend application which is your application. It keeps track of your remote files and accepts new and existing files. Depending on what files has changed it can trigger an automatic restart of the backend.
-`cf-fastpush-plugin` -- A cf cli plugin that talks to the controller. It tracks your local files and synchronizes those that has been changed or added.
+- `cf-fastpush-controller`: A daemon that sits between your application and the gorouters. This service is always available and it responds to some specific paths under `/_fastpush/*`. Paths that are not known to the controller are reverse-proxied to the backend application which is your application. It keeps track of your remote files and accepts new and existing files. Depending on what files has changed it can trigger an automatic restart of the backend.
+- `cf-fastpush-plugin`: A cf cli plugin that talks to the controller. It tracks your local files and synchronizes those that has been changed or added.
 
 The actual code does more than what is documented here. So we suggest you to read the source if you are really interested in how it works and what else it can do.
 
