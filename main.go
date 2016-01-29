@@ -5,14 +5,14 @@ import (
 	"os"
 	"regexp"
 
-	"github.com/parnurzeal/gorequest"
-	"github.com/xiwenc/cf-fastpush-controller/lib"
+	"encoding/json"
 	"github.com/cloudfoundry/cli/cf/terminal"
 	"github.com/cloudfoundry/cli/plugin"
+	"github.com/parnurzeal/gorequest"
 	"github.com/simonleung8/flags"
-	"strings"
-	"encoding/json"
+	"github.com/xiwenc/cf-fastpush-controller/lib"
 	"io/ioutil"
+	"strings"
 )
 
 /*
@@ -22,6 +22,13 @@ import (
  */
 type FastPushPlugin struct {
 	ui terminal.UI
+}
+
+type VCAPApplication struct {
+	VCAP_APPLICATION struct {
+		ApplicationID      string `json:"application_id"`
+		ApplicationVersion string `json:"application_version"`
+	} `json:"VCAP_APPLICATION"`
 }
 
 /*
@@ -52,7 +59,6 @@ func (c *FastPushPlugin) Run(cliConnection plugin.CliConnection, args []string) 
 	if cliLogged == false {
 		panic("cannot perform fast-push without being logged in to CF")
 	}
-
 
 	if args[0] == "fast-push" || args[0] == "fp" {
 		if len(args) == 1 {
@@ -101,6 +107,8 @@ func (c *FastPushPlugin) FastPush(cliConnection plugin.CliConnection, appName st
 	// Please check what GetApp returns here
 	// https://github.com/cloudfoundry/cli/blob/master/plugin/models/get_app.go
 
+	authToken := c.GetAppVersionId(cliConnection, appName)
+
 	if dryRun {
 		// NEED TO HANDLE DRY RUN
 		c.ui.Warn("warning: No changes will be applied, this is a dry run !!")
@@ -108,7 +116,7 @@ func (c *FastPushPlugin) FastPush(cliConnection plugin.CliConnection, appName st
 
 	apiEndpoint := c.GetApiEndpoint(cliConnection, appName)
 	request := gorequest.New()
-	_, body, err := request.Get(apiEndpoint + "/files").End()
+	_, body, err := request.Get(apiEndpoint+"/_fastpush/files").Set("x-auth-token", authToken).End()
 	if err != nil {
 		panic(err)
 	}
@@ -119,7 +127,7 @@ func (c *FastPushPlugin) FastPush(cliConnection plugin.CliConnection, appName st
 
 	filesToUpload := c.ComputeFilesToUpload(localFiles, remoteFiles)
 	payload, _ := json.Marshal(filesToUpload)
-	_, body, err = request.Put(apiEndpoint + "/files").Send(string(payload)).End()
+	_, body, err = request.Put(apiEndpoint+"/_fastpush/files").Set("x-auth-token", authToken).Send(string(payload)).End()
 	if err != nil {
 		panic(err)
 	}
@@ -196,15 +204,36 @@ func (c *FastPushPlugin) showUsage(args []string) {
 	}
 }
 
+func (c *FastPushPlugin) GetAppVersionId(cliConnection plugin.CliConnection, appName string) string {
+	results, err := cliConnection.CliCommandWithoutTerminalOutput("env", appName)
+	if err != nil {
+		c.ui.Failed(err.Error())
+	}
+
+	var vcap VCAPApplication
+
+	for _, line := range results {
+		if strings.HasPrefix(line, "{\n \"VCAP_APPLICATION\"") {
+			data := []byte(line)
+			if err := json.Unmarshal(data, &vcap); err != nil {
+				panic(err)
+			} else {
+				return vcap.VCAP_APPLICATION.ApplicationID + "-" + vcap.VCAP_APPLICATION.ApplicationVersion
+			}
+		}
+	}
+
+	panic("Could not find usable VCAP_APPLICATION block")
+}
+
 func (c *FastPushPlugin) GetApiEndpoint(cliConnection plugin.CliConnection, appName string) string {
 	results, err := cliConnection.CliCommandWithoutTerminalOutput("app", appName)
 	if err != nil {
 		c.ui.Failed(err.Error())
 	}
 
-
 	for _, line := range results {
-		match, _ :=regexp.MatchString("^urls:.*", line)
+		match, _ := regexp.MatchString("^urls:.*", line)
 		if match {
 			parts := strings.Fields(line)
 			if len(parts) > 1 {
