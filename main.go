@@ -116,7 +116,7 @@ func (c *FastPushPlugin) FastPush(cliConnection plugin.CliConnection, appName st
 
 	apiEndpoint := c.GetApiEndpoint(cliConnection, appName)
 	request := gorequest.New()
-	_, body, err := request.Get(apiEndpoint+"/_fastpush/files").Set("x-auth-token", authToken).End()
+	_, body, err := request.Get(apiEndpoint + "/files").Set("x-auth-token", authToken).End()
 	if err != nil {
 		panic(err)
 	}
@@ -127,7 +127,7 @@ func (c *FastPushPlugin) FastPush(cliConnection plugin.CliConnection, appName st
 
 	filesToUpload := c.ComputeFilesToUpload(localFiles, remoteFiles)
 	payload, _ := json.Marshal(filesToUpload)
-	_, body, err = request.Put(apiEndpoint+"/_fastpush/files").Set("x-auth-token", authToken).Send(string(payload)).End()
+	_, body, err = request.Put(apiEndpoint+"/files").Set("x-auth-token", authToken).Send(string(payload)).End()
 	if err != nil {
 		panic(err)
 	}
