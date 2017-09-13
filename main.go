@@ -94,11 +94,21 @@ func (c *FastPushPlugin) Run(cliConnection plugin.CliConnection, args []string) 
 
 }
 
+func (c *FastPushPlugin) GetAuthToken(cliConnection plugin.CliConnection, appName string) string {
+	app, err := cliConnection.GetApp(appName)
+	if err != nil {
+		panic(err)
+	}
+	return app.Guid
+}
+
 func (c *FastPushPlugin) FastPushStatus(cliConnection plugin.CliConnection, appName string) {
+	authToken := c.GetAuthToken(cliConnection, appName)
+
 	apiEndpoint := c.GetApiEndpoint(cliConnection, appName)
 	status := lib.Status{}
 	request := gorequest.New()
-	_, body, err := request.Get(apiEndpoint + "/status").End()
+	_, body, err := request.Get(apiEndpoint + "/status").Set("x-auth-token", authToken).End()
 	if err != nil {
 		panic(err)
 	}
@@ -110,11 +120,7 @@ func (c *FastPushPlugin) FastPush(cliConnection plugin.CliConnection, appName st
 	// Please check what GetApp returns here
 	// https://github.com/cloudfoundry/cli/blob/master/plugin/models/get_app.go
 
-	app, err_app := cliConnection.GetApp(appName)
-	if err_app != nil {
-		panic(err_app)
-	}
-	authToken := app.Guid
+	authToken := c.GetAuthToken(cliConnection, appName)
 
 	if dryRun {
 		// NEED TO HANDLE DRY RUN
