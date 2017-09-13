@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"net/http"
 
 	"encoding/json"
-	"github.com/cloudfoundry/cli/cf/terminal"
-	"github.com/cloudfoundry/cli/plugin"
+	"code.cloudfoundry.org/cli/plugin"
+	"code.cloudfoundry.org/cli/cf/terminal"
+	"code.cloudfoundry.org/cli/cf/trace"
 	"github.com/parnurzeal/gorequest"
 	"github.com/simonleung8/flags"
 	"github.com/xiwenc/cf-fastpush-controller/lib"
@@ -49,7 +51,8 @@ func (c *FastPushPlugin) Run(cliConnection plugin.CliConnection, args []string) 
 	// Ensure that the user called the command fast-push
 	// alias fp is auto mapped
 	var dryRun bool
-	c.ui = terminal.NewUI(os.Stdin, terminal.NewTeePrinter())
+	traceLogger := trace.NewLogger(os.Stdout, true, os.Getenv("CF_TRACE"), "")
+	c.ui = terminal.NewUI(os.Stdin, os.Stdout, terminal.NewTeePrinter(os.Stdout), traceLogger)
 
 	cliLogged, err := cliConnection.IsLoggedIn()
 	if err != nil {
@@ -57,7 +60,7 @@ func (c *FastPushPlugin) Run(cliConnection plugin.CliConnection, args []string) 
 	}
 
 	if cliLogged == false {
-		panic("cannot perform fast-push without being logged in to CF")
+		panic("Cannot perform fast-push without being logged in to CF")
 	}
 
 	if args[0] == "fast-push" || args[0] == "fp" {
@@ -107,7 +110,11 @@ func (c *FastPushPlugin) FastPush(cliConnection plugin.CliConnection, appName st
 	// Please check what GetApp returns here
 	// https://github.com/cloudfoundry/cli/blob/master/plugin/models/get_app.go
 
-	authToken := c.GetAppVersionId(cliConnection, appName)
+	app, err_app := cliConnection.GetApp(appName)
+	if err_app != nil {
+		panic(err_app)
+	}
+	authToken := app.Guid
 
 	if dryRun {
 		// NEED TO HANDLE DRY RUN
@@ -116,9 +123,12 @@ func (c *FastPushPlugin) FastPush(cliConnection plugin.CliConnection, appName st
 
 	apiEndpoint := c.GetApiEndpoint(cliConnection, appName)
 	request := gorequest.New()
-	_, body, err := request.Get(apiEndpoint + "/files").Set("x-auth-token", authToken).End()
+	response, body, err := request.Get(apiEndpoint + "/files").Set("x-auth-token", authToken).End()
 	if err != nil {
 		panic(err)
+	}
+	if response.StatusCode != http.StatusOK {
+		panic("Unexpected status code received while retrieving filelist")
 	}
 	remoteFiles := map[string]*lib.FileEntry{}
 	json.Unmarshal([]byte(body), &remoteFiles)
@@ -155,12 +165,12 @@ func (c *FastPushPlugin) GetMetadata() plugin.PluginMetadata {
 		Name: "FastPushPlugin",
 		Version: plugin.VersionType{
 			Major: 1,
-			Minor: 0,
+			Minor: 1,
 			Build: 0,
 		},
 		MinCliVersion: plugin.VersionType{
 			Major: 6,
-			Minor: 7,
+			Minor: 28,
 			Build: 0,
 		},
 		Commands: []plugin.Command{
@@ -168,8 +178,6 @@ func (c *FastPushPlugin) GetMetadata() plugin.PluginMetadata {
 				Name:     "fast-push",
 				Alias:    "fp",
 				HelpText: "fast-push removes the need to deploy your app again for a small change",
-				// UsageDetails is optional
-				// It is used to show help of usage of each command
 				UsageDetails: plugin.Usage{
 					Usage: "cf fast-push APP_NAME\n   cf fp APP_NAME",
 					Options: map[string]string{
@@ -181,6 +189,9 @@ func (c *FastPushPlugin) GetMetadata() plugin.PluginMetadata {
 				Name:     "fast-push-status",
 				Alias:    "fps",
 				HelpText: "fast-push-status shows the current state of your application",
+				UsageDetails: plugin.Usage{
+					Usage: "cf fast-push-status APP_NAME\n   cf fps APP_NAME",
+				},
 			},
 		},
 	}
@@ -202,28 +213,6 @@ func (c *FastPushPlugin) showUsage(args []string) {
 			fmt.Println("Invalid Usage: \n", cmd.UsageDetails.Usage)
 		}
 	}
-}
-
-func (c *FastPushPlugin) GetAppVersionId(cliConnection plugin.CliConnection, appName string) string {
-	results, err := cliConnection.CliCommandWithoutTerminalOutput("env", appName)
-	if err != nil {
-		c.ui.Failed(err.Error())
-	}
-
-	var vcap VCAPApplication
-
-	for _, line := range results {
-		if strings.HasPrefix(line, "{\n \"VCAP_APPLICATION\"") {
-			data := []byte(line)
-			if err := json.Unmarshal(data, &vcap); err != nil {
-				panic(err)
-			} else {
-				return vcap.VCAP_APPLICATION.ApplicationID + "-" + vcap.VCAP_APPLICATION.ApplicationVersion
-			}
-		}
-	}
-
-	panic("Could not find usable VCAP_APPLICATION block")
 }
 
 func (c *FastPushPlugin) GetApiEndpoint(cliConnection plugin.CliConnection, appName string) string {
